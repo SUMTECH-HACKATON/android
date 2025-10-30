@@ -61,6 +61,8 @@ class RecyclingViewModel : ViewModel() {
 
     fun analyzeImage(imageUri: Uri, isFromCamera: Boolean = false) {
         viewModelScope.launch {
+            // 이미지 분석 시작 전에 URI를 먼저 설정하여 화면에 표시되도록 함
+            _selectedImageUri.value = imageUri
             _uiState.value = UiState.Loading
 
             repository?.analyzeImage(imageUri)
@@ -87,7 +89,7 @@ class RecyclingViewModel : ViewModel() {
 
     fun resetState() {
         _uiState.value = UiState.Idle
-        // 이미지 URI는 유지하여 뒤로가기 시에도 이미지가 보이도록 함
-        // _selectedImageUri.value = null
+        // 이미지 URI는 명시적으로 null로 설정
+        _selectedImageUri.value = null
     }
 }

@@ -21,6 +21,10 @@ import java.util.concurrent.TimeUnit
 
 class RecyclingRepository(private val context: Context? = null) {
 
+    companion object {
+        private const val BASE_URL = "http://3.38.48.153:8001/"
+    }
+
     private val apiService: RecyclingApiService by lazy {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -34,7 +38,7 @@ class RecyclingRepository(private val context: Context? = null) {
             .build()
 
         Retrofit.Builder()
-            .baseUrl("http://3.38.48.153:8001/")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -66,6 +70,19 @@ class RecyclingRepository(private val context: Context? = null) {
                     // 카테고리 추론 (materials 기반)
                     val category = inferCategory(result.materials)
 
+                    // image_url이 상대 경로인 경우 전체 URL로 변환
+                    val fullImageUrl = result.imageUrl?.let { url ->
+                        android.util.Log.d("RecyclingRepository", "Original image_url from server: $url")
+                        val converted = if (url.startsWith("http://") || url.startsWith("https://")) {
+                            url
+                        } else {
+                            // 상대 경로인 경우 BASE_URL과 결합
+                            BASE_URL.trimEnd('/') + "/" + url.trimStart('/')
+                        }
+                        android.util.Log.d("RecyclingRepository", "Converted image URL: $converted")
+                        converted
+                    }
+
                     // 빈 값이 와도 기본값으로 처리하여 보여줌
                     val recyclingResult = RecyclingResult(
                         category = category,
@@ -75,8 +92,11 @@ class RecyclingRepository(private val context: Context? = null) {
                         method = result.disposalMethods.takeIf { it.isNotEmpty() }
                             ?.joinToString("\n\n")
                             ?: "분리수거 방법 정보를 확인할 수 없습니다.",
-                        tip = generateTip(result.details)
+                        tip = result.tips?.firstOrNull() ?: generateTip(result.details),
+                        imageUrl = fullImageUrl
                     )
+
+                    android.util.Log.d("RecyclingRepository", "RecyclingResult created with imageUrl: ${recyclingResult.imageUrl}")
 
                     // 임시 파일 삭제
                     file.delete()
@@ -112,40 +132,31 @@ class RecyclingRepository(private val context: Context? = null) {
     }
 
     private fun uriToFile(context: Context, uri: Uri): File {
-        // FileProvider URI인 경우 (카메라로 찍은 사진)
-        if (uri.scheme == "content" && uri.authority?.contains("fileprovider") == true) {
-            // URI의 path에서 실제 파일 경로 추출
-            val path = uri.path
-            if (path != null) {
-                // FileProvider URI는 이미 캐시 디렉토리의 파일을 가리킴
-                val fileName = path.substringAfterLast('/')
-                val file = File(context.cacheDir, fileName)
-                if (file.exists() && file.length() > 0) {
-                    android.util.Log.d("RecyclingRepository", "Using existing camera file: ${file.length()} bytes")
-                    return file
-                }
-            }
-        }
+        android.util.Log.d("RecyclingRepository", "Converting URI to file: $uri")
 
-        // 일반 content URI (갤러리 등)
         val contentResolver = context.contentResolver
         val fileName = getFileName(context, uri)
-        val tempFile = File(context.cacheDir, "temp_$fileName")
+        val tempFile = File(context.cacheDir, "upload_$fileName")
 
-        contentResolver.openInputStream(uri)?.use { input ->
-            FileOutputStream(tempFile).use { output ->
-                val bytesRead = input.copyTo(output)
-                android.util.Log.d("RecyclingRepository", "File copied: $bytesRead bytes to ${tempFile.absolutePath}")
-            }
+        // URI에서 직접 InputStream을 열어서 임시 파일로 복사
+        try {
+            contentResolver.openInputStream(uri)?.use { input ->
+                FileOutputStream(tempFile).use { output ->
+                    val bytesRead = input.copyTo(output)
+                    android.util.Log.d("RecyclingRepository", "File copied: $bytesRead bytes")
+                }
+            } ?: throw Exception("InputStream을 열 수 없습니다: $uri")
+        } catch (e: Exception) {
+            android.util.Log.e("RecyclingRepository", "Failed to read URI: $uri", e)
+            throw Exception("이미지를 읽을 수 없습니다: ${e.message}")
         }
 
         // 파일 크기 확인
         if (!tempFile.exists() || tempFile.length() == 0L) {
-            throw Exception("파일을 읽을 수 없습니다. URI: $uri, 파일 크기: ${tempFile.length()}")
+            throw Exception("파일이 비어있거나 생성되지 않았습니다")
         }
 
-        android.util.Log.d("RecyclingRepository", "Final file size: ${tempFile.length()} bytes")
-
+        android.util.Log.d("RecyclingRepository", "File created successfully: ${tempFile.length()} bytes")
         return tempFile
     }
 

@@ -16,8 +16,12 @@ data class AnalysisResult(
     val materials: List<String>,
     @SerializedName("details")
     val details: List<String>,
+    @SerializedName("image_url")
+    val imageUrl: String?,
     @SerializedName("disposal_methods")
-    val disposalMethods: List<String>
+    val disposalMethods: List<String>,
+    @SerializedName("tips")
+    val tips: List<String>? = null
 )
 
 // UI에서 사용할 RecyclingResult (호환성 유지)
@@ -27,7 +31,8 @@ data class RecyclingResult(
     val materials: List<String>,
     val details: List<String>,
     val method: String,
-    val tip: String? = null
+    val tip: String? = null,
+    val imageUrl: String? = null
 )
 
 enum class RecyclingCategory(val displayName: String, val color: Long) {

@@ -3,18 +3,47 @@ package net.cleanbin.myapplication.ui.screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Science
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -76,9 +105,11 @@ fun ResultScreen(
                 is UiState.Idle -> {
                     EmptyState()
                 }
+
                 is UiState.Loading -> {
                     LoadingState()
                 }
+
                 is UiState.Success -> {
                     val result = (uiState as UiState.Success<RecyclingResult>).data
                     SuccessState(
@@ -86,6 +117,7 @@ fun ResultScreen(
                         imageUri = selectedImageUri
                     )
                 }
+
                 is UiState.Error -> {
                     val message = (uiState as UiState.Error).message
                     ErrorState(message = message, onRetry = {
@@ -146,12 +178,12 @@ fun SuccessState(
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
-        // 선택한 이미지 표시
+        // 사용자가 선택한 이미지 표시
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn() + slideInVertically()
         ) {
-            imageUri?.let {
+            imageUri?.let { uri ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -160,16 +192,18 @@ fun SuccessState(
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
                     AsyncImage(
-                        model = it,
+                        model = coil.request.ImageRequest.Builder(androidx.compose.ui.platform.LocalContext.current)
+                            .data(uri)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = "선택한 이미지",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
 
         // 물품명과 카테고리
         val categoryEnum = RecyclingCategory.entries.find {
@@ -216,6 +250,60 @@ fun SuccessState(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        // 서버에서 반환한 분석 이미지 표시 (재질 정보 바로 위)
+        result.imageUrl?.let { imageUrl ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Image,
+                            contentDescription = null,
+                            tint = Color(0xFF4CAF50),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "AI 분석 이미지",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2E7D32)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // 서버에서 받은 이미지 표시
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        AsyncImage(
+                            model = imageUrl,
+                            contentDescription = "AI 분석된 이미지",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         // 재질 정보
         if (result.materials.isNotEmpty()) {

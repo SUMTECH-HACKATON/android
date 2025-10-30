@@ -25,7 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.request.ImageRequest
 import net.cleanbin.myapplication.R
 import net.cleanbin.myapplication.ui.viewmodel.RecyclingViewModel
 import java.io.File
@@ -46,6 +50,13 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.initializeAchievementRepository(context)
     }
+
+    // GIF를 위한 ImageLoader 설정
+    val imageLoader = ImageLoader.Builder(context)
+        .components {
+            add(GifDecoder.Factory())
+        }
+        .build()
 
     // 카메라 이미지를 저장할 URI
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -118,9 +129,12 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 배경 이미지 - 전체 화면을 꽉 채움
-            Image(
-                painter = painterResource(id = R.drawable.character_main),
+            // 배경 GIF 이미지 - 전체 화면을 꽉 채움
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(R.drawable.character_main)
+                    .build(),
+                imageLoader = imageLoader,
                 contentDescription = "CleanBin 캐릭터",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop

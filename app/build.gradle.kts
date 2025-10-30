@@ -59,6 +59,7 @@ dependencies {
 
     // Coil for image loading
     implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
 
     // Retrofit for networking
     implementation(libs.retrofit)

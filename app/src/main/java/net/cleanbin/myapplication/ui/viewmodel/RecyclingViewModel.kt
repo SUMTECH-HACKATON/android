@@ -87,6 +87,7 @@ class RecyclingViewModel : ViewModel() {
 
     fun resetState() {
         _uiState.value = UiState.Idle
-        _selectedImageUri.value = null
+        // 이미지 URI는 유지하여 뒤로가기 시에도 이미지가 보이도록 함
+        // _selectedImageUri.value = null
     }
 }

@@ -32,23 +32,26 @@ fun AchievementScreen(
                     Text(
                         text = "업적",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "뒤로 가기"
+                            contentDescription = "뒤로 가기",
+                            tint = Color(0xFF2E7D32)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = Color.White,
+                    titleContentColor = Color(0xFF2E7D32)
                 )
             )
-        }
+        },
+        containerColor = Color.White
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -80,8 +83,9 @@ fun StatsCard(totalAnalyses: Int, unlockedCount: Int) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+            containerColor = Color(0xFFF1F8F4)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -91,7 +95,7 @@ fun StatsCard(totalAnalyses: Int, unlockedCount: Int) {
                 text = "🎯 나의 활동",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = Color(0xFF2E7D32)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -112,12 +116,12 @@ fun StatItem(label: String, value: String) {
             text = value,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color(0xFF4CAF50)
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = Color(0xFF666666)
         )
     }
 }
@@ -129,11 +133,12 @@ fun AchievementItem(achievement: Achievement) {
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = if (achievement.isUnlocked) {
-                MaterialTheme.colorScheme.secondaryContainer
+                Color(0xFFF1F8F4)
             } else {
-                MaterialTheme.colorScheme.surfaceVariant
+                Color(0xFFF5F5F5)
             }
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -148,9 +153,9 @@ fun AchievementItem(achievement: Achievement) {
                     .clip(RoundedCornerShape(12.dp))
                     .background(
                         if (achievement.isUnlocked) {
-                            MaterialTheme.colorScheme.primary
+                            Color(0xFF4CAF50)
                         } else {
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                            Color(0xFFE0E0E0)
                         }
                     ),
                 contentAlignment = Alignment.Center
@@ -171,18 +176,18 @@ fun AchievementItem(achievement: Achievement) {
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (achievement.isUnlocked) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
+                        Color(0xFF2E7D32)
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        Color(0xFF999999)
                     }
                 )
                 Text(
                     text = achievement.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (achievement.isUnlocked) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
+                        Color(0xFF666666)
                     } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        Color(0xFF999999)
                     }
                 )
 
@@ -197,12 +202,12 @@ fun AchievementItem(achievement: Achievement) {
                             Text(
                                 text = "${achievement.currentProgress}/${achievement.requiredCount}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = Color(0xFF999999)
                             )
                             Text(
                                 text = "${(achievement.progress * 100).toInt()}%",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = Color(0xFF999999)
                             )
                         }
                         Spacer(modifier = Modifier.height(4.dp))
@@ -212,8 +217,8 @@ fun AchievementItem(achievement: Achievement) {
                                 .fillMaxWidth()
                                 .height(8.dp)
                                 .clip(RoundedCornerShape(4.dp)),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                            color = Color(0xFF4CAF50),
+                            trackColor = Color(0xFFE0E0E0)
                         )
                     }
                 } else {
@@ -222,7 +227,7 @@ fun AchievementItem(achievement: Achievement) {
                         text = "✓ 달성 완료!",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = Color(0xFF4CAF50)
                     )
                 }
             }

@@ -78,7 +78,7 @@ fun HomeScreen(
     ) { success ->
         if (success) {
             cameraImageUri?.let { uri ->
-                viewModel.setSelectedImage(uri)  // 이미지 URI를 ViewModel에 설정
+                viewModel.setSelectedImage(uri)
                 viewModel.analyzeImage(uri, isFromCamera = true)
                 onNavigateToResult()
             }
@@ -105,7 +105,8 @@ fun HomeScreen(
                     Text(
                         text = "CleanBin",
                         style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = androidx.compose.ui.graphics.Color(0xFF2E7D32)
                     )
                 },
                 actions = {
@@ -113,16 +114,17 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "업적",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = androidx.compose.ui.graphics.Color(0xFF4CAF50)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = androidx.compose.ui.graphics.Color.White,
+                    titleContentColor = androidx.compose.ui.graphics.Color(0xFF2E7D32)
                 )
             )
-        }
+        },
+        containerColor = androidx.compose.ui.graphics.Color.White
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -146,32 +148,8 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Bottom
             ) {
-                // 로고 영역
-                Text(
-                    text = "🌱",
-                    style = MaterialTheme.typography.displayLarge,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                Text(
-                    text = "CleanBin",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "분리수거를 쉽고 빠르게",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
                 // 카메라 버튼
                 Button(
                     onClick = {
@@ -182,7 +160,11 @@ fun HomeScreen(
                         .height(64.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = androidx.compose.ui.graphics.Color(0xFF4CAF50)
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 4.dp,
+                        pressedElevation = 8.dp
                     )
                 ) {
                     Icon(
@@ -192,7 +174,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "사진 촬영",
+                        text = "사진 촬영하기",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -206,7 +188,15 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(64.dp),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = androidx.compose.ui.graphics.Color(0xFF4CAF50),
+                        containerColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(
+                        2.dp,
+                        androidx.compose.ui.graphics.Color(0xFF4CAF50)
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Default.PhotoLibrary,
@@ -215,11 +205,13 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "앨범에서 선택",
+                        text = "앨범에서 선택하기",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
+
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }

@@ -39,7 +39,14 @@ fun ResultScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("분석 결과") },
+                title = {
+                    Text(
+                        "분리수거 방법",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         viewModel.resetState()
@@ -47,16 +54,18 @@ fun ResultScreen(
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "뒤로가기"
+                            contentDescription = "뒤로가기",
+                            tint = Color(0xFF2E7D32)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = Color.White,
+                    titleContentColor = Color(0xFF2E7D32)
                 )
             )
-        }
+        },
+        containerColor = Color.White
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -101,20 +110,20 @@ fun LoadingState() {
             CircularProgressIndicator(
                 modifier = Modifier.size(64.dp),
                 strokeWidth = 6.dp,
-                color = MaterialTheme.colorScheme.primary
+                color = Color(0xFF4CAF50)
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "AI가 이미지를 분석하고 있습니다...",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = Color(0xFF2E7D32)
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "잠시만 기다려주세요 🔍",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color(0xFF666666)
             )
         }
     }
@@ -142,14 +151,14 @@ fun SuccessState(
             visible = isVisible,
             enter = fadeIn() + slideInVertically()
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                imageUri?.let {
+            imageUri?.let {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
                     AsyncImage(
                         model = it,
                         contentDescription = "선택한 이미지",
@@ -171,8 +180,9 @@ fun SuccessState(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(categoryEnum.color).copy(alpha = 0.1f)
-            )
+                containerColor = Color(0xFFF1F8F4)
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp)
@@ -180,14 +190,14 @@ fun SuccessState(
                 // 카테고리 배지
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(categoryEnum.color)
+                        containerColor = Color(0xFF4CAF50)
                     ),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(20.dp)
                 ) {
                     Text(
                         text = categoryEnum.displayName,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -200,7 +210,7 @@ fun SuccessState(
                     text = result.itemName,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = Color(0xFF2E7D32)
                 )
             }
         }
@@ -213,8 +223,9 @@ fun SuccessState(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp)
@@ -225,7 +236,7 @@ fun SuccessState(
                         Icon(
                             imageVector = Icons.Default.Science,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary,
+                            tint = Color(0xFF4CAF50),
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -233,7 +244,7 @@ fun SuccessState(
                             text = "재질",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = Color(0xFF2E7D32)
                         )
                     }
 
@@ -247,13 +258,13 @@ fun SuccessState(
                             Text(
                                 text = "•",
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.secondary,
+                                color = Color(0xFF4CAF50),
                                 modifier = Modifier.padding(end = 8.dp)
                             )
                             Text(
                                 text = material,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                                color = Color(0xFF333333)
                             )
                         }
                     }
@@ -269,8 +280,9 @@ fun SuccessState(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                )
+                    containerColor = Color.White
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp)
@@ -281,7 +293,7 @@ fun SuccessState(
                         Icon(
                             imageVector = Icons.Default.Info,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary,
+                            tint = Color(0xFF4CAF50),
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -289,7 +301,7 @@ fun SuccessState(
                             text = "상세 정보",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                            color = Color(0xFF2E7D32)
                         )
                     }
 
@@ -303,13 +315,13 @@ fun SuccessState(
                             Text(
                                 text = "•",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.tertiary,
+                                color = Color(0xFF4CAF50),
                                 modifier = Modifier.padding(end = 8.dp, top = 2.dp)
                             )
                             Text(
                                 text = detail,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                                color = Color(0xFF333333),
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -325,7 +337,7 @@ fun SuccessState(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = Color(0xFFF1F8F4)
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
@@ -338,7 +350,7 @@ fun SuccessState(
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = Color(0xFF4CAF50),
                         modifier = Modifier.size(28.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -346,7 +358,7 @@ fun SuccessState(
                         text = "분리수거 방법",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = Color(0xFF2E7D32)
                     )
                 }
 
@@ -355,7 +367,7 @@ fun SuccessState(
                 Text(
                     text = result.method,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = Color(0xFF333333),
                     lineHeight = MaterialTheme.typography.bodyLarge.lineHeight.times(1.6f)
                 )
             }
@@ -369,8 +381,9 @@ fun SuccessState(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFF9C4)
-                )
+                    containerColor = Color(0xFFFFF9E6)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),
@@ -427,22 +440,23 @@ fun ErrorState(
                 text = "오류가 발생했습니다",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.error
+                color = Color(0xFFD32F2F)
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color(0xFF666666)
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onRetry,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                    containerColor = Color(0xFF4CAF50)
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("다시 시도")
+                Text("다시 시도", fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -465,7 +479,7 @@ fun EmptyState() {
             Text(
                 text = "이미지를 선택해주세요",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = Color(0xFF666666)
             )
         }
     }

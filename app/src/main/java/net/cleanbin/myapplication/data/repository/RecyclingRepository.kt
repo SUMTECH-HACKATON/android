@@ -66,13 +66,15 @@ class RecyclingRepository(private val context: Context? = null) {
                     // 카테고리 추론 (materials 기반)
                     val category = inferCategory(result.materials)
 
-                    // RecyclingResult로 변환
+                    // 빈 값이 와도 기본값으로 처리하여 보여줌
                     val recyclingResult = RecyclingResult(
                         category = category,
-                        itemName = result.items.firstOrNull() ?: "알 수 없는 물품",
-                        materials = result.materials,
-                        details = result.details,
-                        method = result.disposalMethods.joinToString("\n\n"),
+                        itemName = result.items.firstOrNull()?.takeIf { it.isNotBlank() } ?: "물품 정보 없음",
+                        materials = result.materials.takeIf { it.isNotEmpty() } ?: listOf("재질 정보 없음"),
+                        details = result.details.takeIf { it.isNotEmpty() } ?: emptyList(),
+                        method = result.disposalMethods.takeIf { it.isNotEmpty() }
+                            ?.joinToString("\n\n")
+                            ?: "분리수거 방법 정보를 확인할 수 없습니다.",
                         tip = generateTip(result.details)
                     )
 
@@ -81,11 +83,30 @@ class RecyclingRepository(private val context: Context? = null) {
 
                     Result.success(recyclingResult)
                 } else {
-                    Result.failure(Exception("API 호출 실패: ${response.code()} ${response.message()}"))
+                    // API 호출이 실패해도 기본 결과를 반환
+                    val defaultResult = RecyclingResult(
+                        category = "GENERAL",
+                        itemName = "분석 결과를 가져올 수 없음",
+                        materials = listOf("정보 없음"),
+                        details = emptyList(),
+                        method = "서버 응답을 받지 못했습니다. 네트워크 연결을 확인하거나 나중에 다시 시도해주세요.",
+                        tip = null
+                    )
+                    file.delete()
+                    Result.success(defaultResult)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Result.failure(Exception("이미지 분석 중 오류가 발생했습니다: ${e.message}"))
+                // 예외가 발생해도 기본 결과를 반환
+                val errorResult = RecyclingResult(
+                    category = "GENERAL",
+                    itemName = "분석 중 오류 발생",
+                    materials = listOf("정보 없음"),
+                    details = emptyList(),
+                    method = "이미지 분석 중 오류가 발생했습니다.\n오류 내용: ${e.message ?: "알 수 없는 오류"}",
+                    tip = "다시 시도하거나 다른 이미지를 사용해보세요."
+                )
+                Result.success(errorResult)
             }
         }
     }

@@ -14,10 +14,10 @@ import net.cleanbin.myapplication.data.model.UiState
 import net.cleanbin.myapplication.data.repository.AchievementRepository
 import net.cleanbin.myapplication.data.repository.RecyclingRepository
 
-class RecyclingViewModel(
-    private val repository: RecyclingRepository = RecyclingRepository(),
+class RecyclingViewModel : ViewModel() {
+
+    private var repository: RecyclingRepository? = null
     private var achievementRepository: AchievementRepository? = null
-) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState<RecyclingResult>>(UiState.Idle)
     val uiState: StateFlow<UiState<RecyclingResult>> = _uiState.asStateFlow()
@@ -35,6 +35,9 @@ class RecyclingViewModel(
         if (achievementRepository == null) {
             achievementRepository = AchievementRepository(context)
             loadAchievements()
+        }
+        if (repository == null) {
+            repository = RecyclingRepository(context)
         }
     }
 
@@ -60,8 +63,8 @@ class RecyclingViewModel(
         viewModelScope.launch {
             _uiState.value = UiState.Loading
 
-            repository.analyzeImage(imageUri)
-                .onSuccess { result ->
+            repository?.analyzeImage(imageUri)
+                ?.onSuccess { result ->
                     _uiState.value = UiState.Success(result)
 
                     // 업적 진행도 업데이트
@@ -74,7 +77,7 @@ class RecyclingViewModel(
                         }
                     }
                 }
-                .onFailure { exception ->
+                ?.onFailure { exception ->
                     _uiState.value = UiState.Error(
                         exception.message ?: "알 수 없는 오류가 발생했습니다."
                     )

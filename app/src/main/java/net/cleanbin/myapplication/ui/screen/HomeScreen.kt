@@ -78,6 +78,7 @@ fun HomeScreen(
     ) { success ->
         if (success) {
             cameraImageUri?.let { uri ->
+                viewModel.setSelectedImage(uri)  // 이미지 URI를 ViewModel에 설정
                 viewModel.analyzeImage(uri, isFromCamera = true)
                 onNavigateToResult()
             }
@@ -92,7 +93,6 @@ fun HomeScreen(
             // 권한이 승인되면 카메라 실행
             cameraImageUri = createImageFileUri(context)
             cameraImageUri?.let { uri ->
-                viewModel.setSelectedImage(uri)
                 cameraLauncher.launch(uri)
             }
         }

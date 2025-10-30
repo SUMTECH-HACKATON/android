@@ -1,7 +1,8 @@
 package net.cleanbin.myapplication.data.api
 
-import net.cleanbin.myapplication.data.model.RecyclingResult
+import net.cleanbin.myapplication.data.model.VisionAnalyzeResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -10,8 +11,9 @@ import retrofit2.http.Part
 interface RecyclingApiService {
 
     @Multipart
-    @POST("api/analyze")
+    @POST("vision/analyze")
     suspend fun analyzeImage(
-        @Part image: MultipartBody.Part
-    ): Response<RecyclingResult>
+        @Part file: MultipartBody.Part,
+        @Part("model") model: RequestBody
+    ): Response<VisionAnalyzeResponse>
 }

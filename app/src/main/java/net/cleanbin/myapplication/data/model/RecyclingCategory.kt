@@ -2,17 +2,32 @@ package net.cleanbin.myapplication.data.model
 
 import com.google.gson.annotations.SerializedName
 
+// API 응답 전체 구조
+data class VisionAnalyzeResponse(
+    @SerializedName("result")
+    val result: AnalysisResult
+)
+
+// 분석 결과
+data class AnalysisResult(
+    @SerializedName("items")
+    val items: List<String>,
+    @SerializedName("materials")
+    val materials: List<String>,
+    @SerializedName("details")
+    val details: List<String>,
+    @SerializedName("disposal_methods")
+    val disposalMethods: List<String>
+)
+
+// UI에서 사용할 RecyclingResult (호환성 유지)
 data class RecyclingResult(
-    @SerializedName("category")
     val category: String,
-    @SerializedName("itemName")
     val itemName: String,
-    @SerializedName("method")
+    val materials: List<String>,
+    val details: List<String>,
     val method: String,
-    @SerializedName("tip")
-    val tip: String? = null,
-    @SerializedName("images")
-    val images: List<String> = emptyList()
+    val tip: String? = null
 )
 
 enum class RecyclingCategory(val displayName: String, val color: Long) {

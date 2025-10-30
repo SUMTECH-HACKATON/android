@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 개발 서버를 위한 cleartext 통신 허용 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">3.38.48.153</domain>
+    </domain-config>
+
+    <!-- 기본 설정: HTTPS만 허용 -->
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

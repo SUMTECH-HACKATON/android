@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,10 +36,16 @@ import java.util.*
 @Composable
 fun HomeScreen(
     viewModel: RecyclingViewModel,
-    onNavigateToResult: () -> Unit
+    onNavigateToResult: () -> Unit,
+    onNavigateToAchievements: () -> Unit
 ) {
     val context = LocalContext.current
     val selectedImageUri by viewModel.selectedImageUri.collectAsState()
+
+    // ViewModel 초기화
+    LaunchedEffect(Unit) {
+        viewModel.initializeAchievementRepository(context)
+    }
 
     // 카메라 이미지를 저장할 URI
     var cameraImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -49,7 +56,7 @@ fun HomeScreen(
     ) { uri: Uri? ->
         uri?.let {
             viewModel.setSelectedImage(it)
-            viewModel.analyzeImage(it)
+            viewModel.analyzeImage(it, isFromCamera = false)
             onNavigateToResult()
         }
     }
@@ -60,7 +67,7 @@ fun HomeScreen(
     ) { success ->
         if (success) {
             cameraImageUri?.let { uri ->
-                viewModel.analyzeImage(uri)
+                viewModel.analyzeImage(uri, isFromCamera = true)
                 onNavigateToResult()
             }
         }
@@ -90,6 +97,15 @@ fun HomeScreen(
                         fontWeight = FontWeight.Bold
                     )
                 },
+                actions = {
+                    IconButton(onClick = onNavigateToAchievements) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "업적",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -116,8 +132,32 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
+                verticalArrangement = Arrangement.Center
             ) {
+                // 로고 영역
+                Text(
+                    text = "🌱",
+                    style = MaterialTheme.typography.displayLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = "CleanBin",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "분리수거를 쉽고 빠르게",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 // 카메라 버튼
                 Button(
                     onClick = {

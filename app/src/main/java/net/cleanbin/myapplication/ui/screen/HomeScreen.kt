@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,7 +42,8 @@ import java.util.*
 fun HomeScreen(
     viewModel: RecyclingViewModel,
     onNavigateToResult: () -> Unit,
-    onNavigateToAchievements: () -> Unit
+    onNavigateToAchievements: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     val context = LocalContext.current
     val selectedImageUri by viewModel.selectedImageUri.collectAsState()
@@ -110,6 +112,13 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "설정",
+                            tint = androidx.compose.ui.graphics.Color(0xFF4CAF50)
+                        )
+                    }
                     IconButton(onClick = onNavigateToAchievements) {
                         Icon(
                             imageVector = Icons.Default.Star,

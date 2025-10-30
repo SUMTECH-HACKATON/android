@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import net.cleanbin.myapplication.ui.screen.AchievementScreen
 import net.cleanbin.myapplication.ui.screen.HomeScreen
 import net.cleanbin.myapplication.ui.screen.ResultScreen
+import net.cleanbin.myapplication.ui.screen.SettingsScreen
 import net.cleanbin.myapplication.ui.viewmodel.RecyclingViewModel
 
 @Composable
@@ -29,6 +30,9 @@ fun NavGraph(
                 },
                 onNavigateToAchievements = {
                     navController.navigate(Screen.Achievement.route)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Screen.Settings.route)
                 }
             )
         }
@@ -49,6 +53,14 @@ fun NavGraph(
             AchievementScreen(
                 achievements = achievements,
                 totalAnalysisCount = totalAnalysisCount,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(
                 onNavigateBack = {
                     navController.popBackStack()
                 }
